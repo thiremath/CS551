@@ -16,7 +16,17 @@
  */
 int bitmap_find_first_bit(unsigned char * bitmap, int size, int val)
 {
-	/* Your code here */
+    if (!bitmap || size <= 0) return BITMAP_OP_ERROR;
+
+    for (int byte = 0; byte < size; ++byte) {
+        for (int bit = 0; bit < BIT_PER_BYTE; ++bit) {
+            int current_bit = (bitmap[byte] >> bit) & 1;
+            if (current_bit == val) {
+                return byte * BIT_PER_BYTE + bit;
+            }
+        }
+    }
+    return BITMAP_OP_NOT_FOUND;
 }
 
 /*
@@ -29,7 +39,12 @@ int bitmap_find_first_bit(unsigned char * bitmap, int size, int val)
  */
 int bitmap_set_bit(unsigned char * bitmap, int size, int target_pos)
 {
-    /* Your code here */
+    if (!bitmap || target_pos < 0 || target_pos >= size * BIT_PER_BYTE) return BITMAP_OP_ERROR;
+
+    int byte_index = target_pos / BIT_PER_BYTE;
+    int bit_index = target_pos % BIT_PER_BYTE;
+    bitmap[byte_index] |= (1 << bit_index);
+    return BITMAP_OP_SUCCEED;
 }
 
 /*
@@ -42,7 +57,12 @@ int bitmap_set_bit(unsigned char * bitmap, int size, int target_pos)
  */
 int bitmap_clear_bit(unsigned char * bitmap, int size, int target_pos)
 {
-    /* Your code here */
+    if (!bitmap || target_pos < 0 || target_pos >= size * BIT_PER_BYTE) return BITMAP_OP_ERROR;
+
+    int byte_index = target_pos / BIT_PER_BYTE;
+    int bit_index = target_pos % BIT_PER_BYTE;
+    bitmap[byte_index] &= ~(1 << bit_index);
+    return BITMAP_OP_SUCCEED;
 }
 
 
@@ -56,7 +76,11 @@ int bitmap_clear_bit(unsigned char * bitmap, int size, int target_pos)
  */
 int bitmap_bit_is_set(unsigned char * bitmap, int size, int pos)
 {
-    /* Your code here */
+    if (!bitmap || pos < 0 || pos >= size * BIT_PER_BYTE) return BITMAP_OP_ERROR;
+
+    int byte_index = pos / BIT_PER_BYTE;
+    int bit_index = pos % BIT_PER_BYTE;
+    return (bitmap[byte_index] >> bit_index) & 1;
 }
 
 /*

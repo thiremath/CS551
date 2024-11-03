@@ -40,5 +40,10 @@ void mem_mngr_leave(void);
 void mem_mngr_print_snapshot(void);
 void * mem_mngr_alloc(size_t size);
 void mem_mngr_free(void * ptr);
+// static int find_first_free_slot(unsigned char *bitmap, size_t bitmap_size);
+// static STRU_MEM_LIST *get_or_create_mem_list(size_t slot_size);
+// static size_t align_size(size_t size);
+STRU_MEM_LIST* create_memory_list(int slot_size);
+STRU_MEM_LIST* find_or_create_list(int slot_size);
 
 #endif //__MEM_MNGR_H__
