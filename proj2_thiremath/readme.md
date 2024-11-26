@@ -32,10 +32,6 @@
 ### Core Functions
 
 
-### Helper Functions
-
-
-### Bitmap Utilities
 
 
 ### Error Handling
