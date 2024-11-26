@@ -103,21 +103,21 @@ int letter_counter_reduce(int * p_fd_in, int fd_in_num, int fd_out)
     unsigned long data_size = sizeof(data);
     int fd_in;
     ssize_t byte_read;
+    int count;
+    char letter;
+    int n;
+    int index=0;
 
     if ( p_fd_in!=NULL && fd_in_num >= 0){
-        for (int i = 0; i < fd_in_num; i++)
+        while (index < fd_in_num)
         {   
-            fd_in = p_fd_in[i];
+            fd_in = p_fd_in[index];
 
             while ((byte_read = read(fd_in, data, data_size)) > 0)
             {
                 ptr = data;
                 while (ptr < data + byte_read)
                 {   
-                    int count;
-                    char letter;
-                    int n;
-
                     if ((n = sscanf(ptr, "%c %d\n", &letter, &count)) == 2)
                     {
                         letter_counter_arr[letter - 'A'] += count;
@@ -138,14 +138,16 @@ int letter_counter_reduce(int * p_fd_in, int fd_in_num, int fd_out)
 
             if (byte_read < 0)
             {
-                for (int j = 0; j <= i; j++)
+                int temp = 0;
+                while(temp <= index)
                 {
-                    close(p_fd_in[j]);
+                    close(p_fd_in[temp]);
                 }
                 return -1;
             }
 
             close(fd_in);
+            index++;
         }
 
         return writeToFile(0, fd_out, line, sizeof(line), letter_counter_arr, NULL, 0);
