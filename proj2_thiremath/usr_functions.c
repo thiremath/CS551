@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "usr_functions.h"
+#include <ctype.h>
 
 int writeToFile(int len, int fd_out, char line[], unsigned long size, int letter_counter_arr[],char *data, int flag){
 
@@ -180,17 +181,23 @@ int word_finder_map(DATA_SPLIT * split, int fd_out)
 
                 // Extract the target word from user data
                 const char *targetWord = (const char *)split->usr_data;
-        
+                size_t targetLen = strlen(targetWord);
                 // Tokenize the buffer line by line
                 char *line = strtok(data, "\n");
                 while (line) {
-                    // Check if the current line contains the target word
-                    if (strstr(line, targetWord)) {
-                        // Write the matching line to the output file descriptor
-                        if (dprintf(fd_out, "%s\n", line) < 0) {
-                            free(data);
-                            return -1;
+                    char *pos = line;
+                    while ((pos = strstr(pos, targetWord))) {
+                        // Check for word boundaries
+                        if ((pos == line || !isalnum(*(pos - 1))) &&  // Start of line or non-alphanumeric before
+                            (!isalnum(*(pos + targetLen)))) {         // Non-alphanumeric after
+                            // Write the matching line to the output file descriptor
+                            if (dprintf(fd_out, "%s\n", line) < 0) {
+                                free(data);
+                                return -1;
+                            }
+                            break;  // Found a match in this line, move to the next line
                         }
+                        pos += targetLen;  // Move past the current match
                     }
                     line = strtok(NULL, "\n");
                 }
